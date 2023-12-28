@@ -1,0 +1,21 @@
+# 폴더 - 이미지
+/BP_Api_File/food
+/BP_Api_File/not_food_img
+/BP_OB_Model/img
+/BP_OB_Model/img_zip
+/Model
+/BP_OB_Model/Train
+/BP_OB_Model/Val
+/BP_OB_Model/Test
+
+# 파일
+/BP_Api_File/secrets.json
+/kfood.zip
+/azure.txt
+/.vscode
+/BP_OB_Model/runs
+
+# yolov
+/BP_OB_Model/yolov8n.pt
+/BP_OB_Model/yolov8m.pt
+.databricks

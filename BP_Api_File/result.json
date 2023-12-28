@@ -1,0 +1,621 @@
+{
+	"version": "V2",
+	"requestId": "a01c47b5-5533-4370-9487-1e0b42c7b979",
+	"timestamp": 1703695302482,
+	"images": [
+		{
+			"receipt": {
+				"meta": {
+					"estimatedLanguage": "ko"
+				},
+				"result": {
+					"storeInfo": {
+						"name": {
+							"text": "어묵",
+							"formatted": {
+								"value": "어묵"
+							},
+							"keyText": "",
+							"confidenceScore": 0.88196,
+							"boundingPolys": [
+								{
+									"vertices": [
+										{
+											"x": 1201.0,
+											"y": 145.0
+										},
+										{
+											"x": 1206.0,
+											"y": 190.0
+										},
+										{
+											"x": 1188.0,
+											"y": 191.0
+										},
+										{
+											"x": 1184.0,
+											"y": 147.0
+										}
+									]
+								}
+							],
+							"maskingPolys": []
+						},
+						"bizNum": {
+							"text": "214-86-08930",
+							"formatted": {
+								"value": "214-86-08930"
+							},
+							"keyText": "",
+							"confidenceScore": 0.89462,
+							"boundingPolys": [
+								{
+									"vertices": [
+										{
+											"x": 1181.0,
+											"y": 139.0
+										},
+										{
+											"x": 1195.0,
+											"y": 286.0
+										},
+										{
+											"x": 1179.0,
+											"y": 287.0
+										},
+										{
+											"x": 1165.0,
+											"y": 140.0
+										}
+									]
+								}
+							],
+							"maskingPolys": []
+						},
+						"addresses": [
+							{
+								"text": "현포로 경남 잘한일들로 군북면",
+								"formatted": {
+									"value": "현포로 경남 잘한일들로 군북면"
+								},
+								"keyText": "",
+								"confidenceScore": 0.47131,
+								"boundingPolys": [
+									{
+										"vertices": [
+											{
+												"x": 1170.0,
+												"y": 371.0
+											},
+											{
+												"x": 1173.0,
+												"y": 442.0
+											},
+											{
+												"x": 1155.0,
+												"y": 443.0
+											},
+											{
+												"x": 1152.0,
+												"y": 371.0
+											}
+										]
+									},
+									{
+										"vertices": [
+											{
+												"x": 1150.0,
+												"y": 137.0
+											},
+											{
+												"x": 1154.0,
+												"y": 184.0
+											},
+											{
+												"x": 1133.0,
+												"y": 187.0
+											},
+											{
+												"x": 1129.0,
+												"y": 139.0
+											}
+										]
+									},
+									{
+										"vertices": [
+											{
+												"x": 1166.0,
+												"y": 194.0
+											},
+											{
+												"x": 1183.0,
+												"y": 319.0
+											},
+											{
+												"x": 1149.0,
+												"y": 324.0
+											},
+											{
+												"x": 1132.0,
+												"y": 199.0
+											}
+										]
+									},
+									{
+										"vertices": [
+											{
+												"x": 1162.0,
+												"y": 286.0
+											},
+											{
+												"x": 1166.0,
+												"y": 355.0
+											},
+											{
+												"x": 1149.0,
+												"y": 356.0
+											},
+											{
+												"x": 1145.0,
+												"y": 286.0
+											}
+										]
+									}
+								],
+								"maskingPolys": []
+							}
+						],
+						"tel": [
+							{
+								"text": "055)582-2191",
+								"formatted": {
+									"value": "0555822191"
+								},
+								"keyText": "TEL",
+								"confidenceScore": 0.83881,
+								"boundingPolys": [
+									{
+										"vertices": [
+											{
+												"x": 1202.0,
+												"y": 356.0
+											},
+											{
+												"x": 1211.0,
+												"y": 493.0
+											},
+											{
+												"x": 1198.0,
+												"y": 494.0
+											},
+											{
+												"x": 1189.0,
+												"y": 357.0
+											}
+										]
+									}
+								]
+							}
+						]
+					},
+					"paymentInfo": {
+						"date": {
+							"text": "2023/12/17",
+							"formatted": {
+								"year": "2023",
+								"month": "12",
+								"day": "17"
+							},
+							"keyText": "",
+							"confidenceScore": 0.48212,
+							"boundingPolys": [
+								{
+									"vertices": [
+										{
+											"x": 1113.0,
+											"y": 219.0
+										},
+										{
+											"x": 1126.0,
+											"y": 349.0
+										},
+										{
+											"x": 1101.0,
+											"y": 352.0
+										},
+										{
+											"x": 1087.0,
+											"y": 222.0
+										}
+									]
+								}
+							],
+							"maskingPolys": []
+						},
+						"time": {
+							"text": "15: 12",
+							"formatted": {
+								"hour": "15",
+								"minute": "12",
+								"second": "00"
+							},
+							"keyText": "",
+							"confidenceScore": 0.87793,
+							"boundingPolys": [
+								{
+									"vertices": [
+										{
+											"x": 1128.0,
+											"y": 361.0
+										},
+										{
+											"x": 1128.0,
+											"y": 398.0
+										},
+										{
+											"x": 1108.0,
+											"y": 398.0
+										},
+										{
+											"x": 1108.0,
+											"y": 361.0
+										}
+									]
+								},
+								{
+									"vertices": [
+										{
+											"x": 1132.0,
+											"y": 395.0
+										},
+										{
+											"x": 1132.0,
+											"y": 425.0
+										},
+										{
+											"x": 1110.0,
+											"y": 425.0
+										},
+										{
+											"x": 1110.0,
+											"y": 395.0
+										}
+									]
+								}
+							]
+						},
+						"cardInfo": {
+							"company": {
+								"text": "국민Check카드",
+								"formatted": {
+									"value": "국민Check카드"
+								},
+								"keyText": "[발",
+								"confidenceScore": 0.67493,
+								"boundingPolys": [
+									{
+										"vertices": [
+											{
+												"x": 466.0,
+												"y": 411.0
+											},
+											{
+												"x": 486.0,
+												"y": 555.0
+											},
+											{
+												"x": 457.0,
+												"y": 559.0
+											},
+											{
+												"x": 438.0,
+												"y": 415.0
+											}
+										]
+									}
+								],
+								"maskingPolys": []
+							},
+							"number": {
+								"text": "949094**********",
+								"formatted": {
+									"value": "949094**********"
+								},
+								"keyText": "[카드번호]",
+								"confidenceScore": 0.87788,
+								"boundingPolys": [
+									{
+										"vertices": [
+											{
+												"x": 512.0,
+												"y": 372.0
+											},
+											{
+												"x": 533.0,
+												"y": 546.0
+											},
+											{
+												"x": 512.0,
+												"y": 548.0
+											},
+											{
+												"x": 491.0,
+												"y": 375.0
+											}
+										]
+									}
+								],
+								"maskingPolys": []
+							}
+						},
+						"confirmNum": {
+							"text": "30023277",
+							"keyText": "[승인번호",
+							"confidenceScore": 0.95434,
+							"boundingPolys": [
+								{
+									"vertices": [
+										{
+											"x": 437.0,
+											"y": 410.0
+										},
+										{
+											"x": 449.0,
+											"y": 503.0
+										},
+										{
+											"x": 425.0,
+											"y": 506.0
+										},
+										{
+											"x": 413.0,
+											"y": 413.0
+										}
+									]
+								}
+							]
+						}
+					},
+					"subResults": [
+						{
+							"items": [
+								{
+									"name": {
+										"text": "삼진어묵사각꼬치2EA",
+										"formatted": {
+											"value": "삼진어묵사각꼬치2EA"
+										},
+										"keyText": "",
+										"confidenceScore": 0.92958,
+										"boundingPolys": [
+											{
+												"vertices": [
+													{
+														"x": 1042.0,
+														"y": 146.0
+													},
+													{
+														"x": 1073.0,
+														"y": 385.0
+													},
+													{
+														"x": 1037.0,
+														"y": 389.0
+													},
+													{
+														"x": 1007.0,
+														"y": 150.0
+													}
+												]
+											}
+										],
+										"maskingPolys": []
+									},
+									"count": {
+										"text": "1",
+										"formatted": {
+											"value": "1"
+										},
+										"keyText": "",
+										"confidenceScore": 0.95096,
+										"boundingPolys": [
+											{
+												"vertices": [
+													{
+														"x": 1040.0,
+														"y": 396.0
+													},
+													{
+														"x": 1040.0,
+														"y": 418.0
+													},
+													{
+														"x": 1010.0,
+														"y": 418.0
+													},
+													{
+														"x": 1010.0,
+														"y": 396.0
+													}
+												]
+											}
+										]
+									},
+									"price": {
+										"price": {
+											"text": "3,500",
+											"formatted": {
+												"value": "3500"
+											},
+											"keyText": "",
+											"confidenceScore": 0.94437,
+											"boundingPolys": [
+												{
+													"vertices": [
+														{
+															"x": 1059.0,
+															"y": 575.0
+														},
+														{
+															"x": 1066.0,
+															"y": 644.0
+														},
+														{
+															"x": 1037.0,
+															"y": 647.0
+														},
+														{
+															"x": 1030.0,
+															"y": 578.0
+														}
+													]
+												}
+											]
+										},
+										"unitPrice": {
+											"text": "3,500",
+											"formatted": {
+												"value": "3500"
+											},
+											"keyText": "",
+											"confidenceScore": 0.85322,
+											"boundingPolys": [
+												{
+													"vertices": [
+														{
+															"x": 1009.0,
+															"y": 152.0
+														},
+														{
+															"x": 1017.0,
+															"y": 221.0
+														},
+														{
+															"x": 989.0,
+															"y": 225.0
+														},
+														{
+															"x": 981.0,
+															"y": 155.0
+														}
+													]
+												}
+											]
+										}
+									}
+								}
+							]
+						}
+					],
+					"totalPrice": {
+						"price": {
+							"text": "3,500",
+							"formatted": {
+								"value": "3500"
+							},
+							"keyText": "합 계",
+							"confidenceScore": 0.91877,
+							"boundingPolys": [
+								{
+									"vertices": [
+										{
+											"x": 726.0,
+											"y": 551.0
+										},
+										{
+											"x": 736.0,
+											"y": 660.0
+										},
+										{
+											"x": 710.0,
+											"y": 663.0
+										},
+										{
+											"x": 700.0,
+											"y": 553.0
+										}
+									]
+								}
+							]
+						}
+					},
+					"subTotal": [
+						{
+							"taxPrice": [
+								{
+									"text": "318",
+									"formatted": {
+										"value": "318"
+									},
+									"keyText": "부 가 세",
+									"confidenceScore": 0.92221,
+									"boundingPolys": [
+										{
+											"vertices": [
+												{
+													"x": 839.0,
+													"y": 613.0
+												},
+												{
+													"x": 841.0,
+													"y": 652.0
+												},
+												{
+													"x": 817.0,
+													"y": 653.0
+												},
+												{
+													"x": 814.0,
+													"y": 614.0
+												}
+											]
+										}
+									]
+								}
+							],
+							"discountPrice": [
+								{
+									"text": "0",
+									"formatted": {
+										"value": "0"
+									},
+									"keyText": "받 할인금액",
+									"confidenceScore": 0.8576,
+									"boundingPolys": [
+										{
+											"vertices": [
+												{
+													"x": 760.0,
+													"y": 632.0
+												},
+												{
+													"x": 760.0,
+													"y": 659.0
+												},
+												{
+													"x": 736.0,
+													"y": 659.0
+												},
+												{
+													"x": 736.0,
+													"y": 632.0
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			},
+			"uid": "c48fda2a31064e66a1ac60670a0c42b6",
+			"name": "demo",
+			"inferResult": "SUCCESS",
+			"message": "SUCCESS",
+			"validationResult": {
+				"result": "NO_REQUESTED"
+			}
+		}
+	]
+}
