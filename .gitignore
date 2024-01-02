@@ -10,6 +10,7 @@
 
 # 파일
 /BP_Api_File/secrets.json
+/BP_Model_JS/secrets.json
 /kfood.zip
 /azure.txt
 /.vscode
@@ -19,3 +20,11 @@
 /BP_OB_Model/yolov8n.pt
 /BP_OB_Model/yolov8m.pt
 .databricks
+
+# nodeJS 파일/폴더
+/BP_Model_JS/node_modules
+/BP_Model_JS/package-lock.json
+/BP_Model_JS/package.json
+
+# flask 파일
+/Server/__pycache__
