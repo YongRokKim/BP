@@ -153,7 +153,8 @@ async function ocrApi(imgPath, secretFile) {
         });
 }
 
-async function odApi(url,imgPath) {
+async function odApi(imgPath) {
+    let odUrl = getSecret("Object_Detection_URL",secretFile);
 
     const formData = new FormData();
     formData.append('food_image', fs.createReadStream(imgPath));
@@ -162,7 +163,7 @@ async function odApi(url,imgPath) {
         ...formData.getHeaders()
     }
 
-    return axios.post(url, formData, { headers })
+    return axios.post(odUrl, formData, { headers })
         .then(response => {
             return response.data;
         })
@@ -171,9 +172,6 @@ async function odApi(url,imgPath) {
             throw error;
         });
 }
-
-// Example usage:
-let odUrl = "http://203.241.246.109:10003/predict";
 
 // Main execution
 const basePath = '../BP/BP_Model_JS/';
@@ -187,7 +185,7 @@ async function processOCR() {
             console.log("ocrResult:", ocrResult.images[0].inferResult);
             imgSizeSharp(imgPath)
             const foodResult = await foodApi(imgPath, secretFile); // Assuming food_api is also an async function
-            const odResult = await odApi(odUrl,imgPath);
+            const odResult = await odApi(imgPath);
             console.log(foodResult[0])
             for (let region_num in foodResult[0]) {
                 console.log(foodResult[0][region_num].prediction_top1,"\n");
