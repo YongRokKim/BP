@@ -16,55 +16,6 @@ async function getSecret(setting) {
     }
 }
 
-// Get image resizing
-async function imgResize(imgPath) {
-    try {
-        // Get the dimensions of the image
-        const { width: originalWidth, height: originalHeight } = await ImageSize.getSize(imgPath);
-
-        // Define the minimum dimensions
-        const minWidth = 1080;
-        const minHeight = 720;
-
-        // Check if the image already meets the minimum size requirements
-        if (originalWidth >= minWidth && originalHeight >= minHeight) {
-            console.log("Image already meets the minimum size requirements. No resizing needed.");
-            return imgPath;
-        }
-
-        let newWidth, newHeight;
-        // Calculate the new dimensions while maintaining aspect ratio
-        if (originalWidth > originalHeight) {
-            // Image is wide
-            newHeight = minHeight;
-            newWidth = (originalWidth / originalHeight) * newHeight;
-            if (newWidth < minWidth) {
-                newWidth = minWidth;
-                newHeight = (originalHeight / originalWidth) * newWidth;
-            }
-        } else {
-            // Image is tall
-            newWidth = minWidth;
-            newHeight = (originalHeight / originalWidth) * newWidth;
-            if (newHeight < minHeight) {
-                newHeight = minHeight;
-                newWidth = (originalWidth / originalHeight) * newHeight;
-            }
-        }
-
-        // Resize the image
-        const resizedImage = await ImageResizer.createResizedImage(imgPath, newWidth, newHeight, 'JPEG', 80);
-        
-        console.log("Image resized and saved: ", resizedImage.uri);
-        return resizedImage.uri;
-    } catch (error) {
-        console.error("Error resizing image:", error);
-    }
-}
-
-
-
-
 // Function to use KT Genie Labs Food API
 async function foodApi(imgPath, secretFile) {
     try {
