@@ -183,16 +183,25 @@ async function odApi(imgPath,secretFile) {
         });
 }
 
-// // Path to use files
-// const basePath = '../BP/BP_Model_JS/';
-// const imgPath = `${basePath}img/not_food1.jpg`;
-// const secretFile = `${basePath}secrets.json`;
-
 // Function of Main execution
-async function processOCR() {
+async function processApi() {
+
+    // request json
+    let data = {
+        // 0 : OCR , 1 : KT & OD
+        "inferResult": 0,
+        // predict Result
+        "predict": {
+            // predict food name
+            "foodNames": [],
+            // kt predict food info
+            "ktFoodsInfo": {}       
+        }
+    };
+
     // Path to use files
     const basePath = '../BP/BP_Model_JS/';
-    const imgPath = `${basePath}img/test_food2.jpg`;
+    const imgPath = `${basePath}img/not_food_test6.jpg`;
     const secretFile = `${basePath}secrets.json`;
 
     try {
@@ -206,33 +215,48 @@ async function processOCR() {
             // KT Api & Flask server call
             const foodResult = await foodApi(imgPath, secretFile);
             const odResult = await odApi(imgPath,secretFile);
+            data['inferResult'] = 1
             // console.log(foodResult[0])
             for (let region_num in foodResult[0]) {
-                console.log(region_num)
+                // console.log(region_num)
                 /*Scheduled to be converted to json format later -> kt Api ================*/
-                console.log(foodResult[0][region_num].prediction_top1,"\n");
-                console.log(foodResult[0][region_num].prediction_top5,"\n--------------");
+                // console.log(foodResult[0][region_num].prediction_top1,"\n");
+                // console.log(foodResult[0][region_num].prediction_top5,"\n--------------");
+                data['predict']['ktFoodsInfo'][region_num] = foodResult[0][region_num].prediction_top1
+                data['predict']['foodNames'].push(foodResult[0][region_num].prediction_top1["food_name"])
                 /*=========================================================================*/
             }
             for (let item in odResult){
                 /*Scheduled to be converted to json format later -> Flask server===========*/
-                console.log(odResult[item])
+                // console.log(odResult[item])
+                data['predict']['foodNames'].push(odResult[item]['Food_name'])
                 /*=========================================================================*/
             }
         } else {
             /*Scheduled to be converted to json format later -> OCR Api====================*/
-            let text = "";
             if (ocrResult.images[0].receipt.result['subResults'].length > 0) {
                 ocrResult.images[0].receipt.result.subResults[0]['items'].forEach(field => {
-                    text += field.name.text + "\n";
+                    data['predict']['foodNames'].push(field.name.text);
                 });
             }
-            console.log(text);
             /*=============================================================================*/
         }
+
+        // JSON.stringify 함수를 사용하여 객체를 JSON 문자열로 변환합니다.
+        const jsonData = JSON.stringify(data, null, 4); // null과 4는 JSON을 예쁘게 출력하기 위한 옵션입니다.
+
+        // 파일로 저장합니다. 'data.json'은 저장될 파일의 이름입니다.
+        fs.writeFile(`${basePath}result.json`, jsonData, 'utf8', function (err) {
+            if (err) {
+                console.log("An error occured while writing JSON Object to File.");
+                return console.log(err);
+            }
+
+            console.log("JSON file has been saved.");
+        });
     } catch (error) {
         console.error("Error:", error);
     }
 }
 
-processOCR();
+processApi();
