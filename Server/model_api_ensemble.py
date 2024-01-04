@@ -13,8 +13,6 @@ from pytz import timezone
 # naver-api lib
 import uuid
 import time
-# json-image-decodeing
-import base64
 
 app = Flask(__name__)
 
@@ -151,43 +149,44 @@ def OCR_api(img,secret_file):
     result = response.json()
     return result
 
-def get_prediction(img):
+def get_prediction(img,model_list):
     img = Image.open(io.BytesIO(img))
-    result = model.predict(img)
-    boxes = result[0].boxes
-    pred_list = {}
-    if len(boxes.conf) > 0:
-        for index,box in enumerate(boxes):
-            # 신뢰도가 가장 높은 객체를 찾음
-            max_conf_index = box.conf.argmax()
-            highest_confidence = box.conf[max_conf_index].item()
-            class_id = box.cls[max_conf_index].item()
+    for model in model_list:
+        result = model.predict(img)
+        boxes = result[0].boxes
+        pred_list = {}
+        if len(boxes.conf) > 0:
+            for index,box in enumerate(boxes):
+                # 신뢰도가 가장 높은 객체를 찾음
+                max_conf_index = box.conf.argmax()
+                highest_confidence = box.conf[max_conf_index].item()
+                class_id = box.cls[max_conf_index].item()
 
-            # 클래스 ID를 사용하여 음식 이름 찾기
-            food_name = result[0].names[class_id]
-            pred_list[f'item{index}']={"Food_name" : food_name,
+                # 클래스 ID를 사용하여 음식 이름 찾기
+                food_name = result[0].names[class_id]
+                pred_list[f'item{index}']={"Food_name" : food_name,
                                      "highest_confidence":highest_confidence}
-            return pred_list       
-    else:
-        print("탐지된 객체가 없습니다.")
+                return pred_list       
+        else:
+            print("탐지된 객체가 없습니다.")
     return pred_list
-    
-model = YOLO("../weights/yolov8m_train.pt")
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    model_list =[]
+    model_yolov8 = YOLO("../weights/yoloyv8m_train.pt")
+    model_yolov5 = YOLO("../weights/yolov5mu_train.pt")
+    
+    model_list.append(model_yolov5)
+    model_list.append(model_yolov8)
+    
     if request.method == 'POST':
         file = request.files['food_image']
-        print("files-type",file)
         img = file.read()
+
         res = {
             # 0 : OCR , 1 : KT & OD
             "inferResult": 0,
-            # mealType 
-            "mealType" : "",
-            # image beatmap
-            #dayTime send
-            "dayTime" : "",
             # predict Result
             "predict": {
                 # predict food name
@@ -212,30 +211,22 @@ def predict():
                 # print('@hello7')
                 food_result = food_api(resized_img, secret_file)
                 od_result = get_prediction(img)
-                print('+++'*20)
-                print(food_result)
-                print("+++"*20)
-                print(od_result)
-                print('+++'*20)
                 res['inferResult'] = 1
                 # print("@hello3")
                 # print("="*20)
                 # print(food_result)
                 # print("="*20)
                 for region_num in food_result[0]:
-                    if food_result[0][region_num]['prediction_top1']['confidence'] >=0.5:
-                        res['predict']['ktFoodsInfo'][region_num] = food_result[0][region_num]['prediction_top1']
-                        res['predict']['foodNames'].append(food_result[0][region_num]['prediction_top1']["food_name"])
+                    res['predict']['ktFoodsInfo'][region_num] = food_result[0][region_num]['prediction_top1']
+                    res['predict']['foodNames'].append(food_result[0][region_num]['prediction_top1']["food_name"])
 
                 for item in od_result:
-                    if od_result[item]['Food_name'] not in res['predict']['foodNames'] and od_result[item]['highest_confidence'] >=0.3:
-                        res['predict']['foodNames'].append(od_result[item]['Food_name'])
+                    res['predict']['foodNames'].append(od_result[item]['Food_name'])
             else:
                 # print('@hello4')
                 if ocr_result['images'][0]['receipt']['result']['subResults']:
                     for field in ocr_result['images'][0]['receipt']['result']['subResults'][0]['items']:
-                        if field['name']['text'] not in res['predict']['foodNames']:
-                            res['predict']['foodNames'].append(field['name']['text'])
+                        res['predict']['foodNames'].append(field['name']['text'])
 
             with open(f"../result.json", 'w', encoding='utf-8') as f:
                 json.dump(res, f, ensure_ascii=False, indent=4)
@@ -248,9 +239,9 @@ def predict():
         # jsonify를 사용하면 json.dump()와 똑같이 ascii 인코딩을 사용하기 때문에 한글 깨짐
         # return jsonify({'class_id': class_id, 'class_name': class_name})
         
-        print(res)
         res = make_response(json.dumps(res, ensure_ascii=False))
         res.headers['Content-Type'] = 'application/json'
+        
         return res
     
 if __name__=="__main__":

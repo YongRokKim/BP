@@ -22,6 +22,7 @@
 /BP_OB_Model/yolov8n.pt
 /BP_OB_Model/yolov8m.pt
 /BP_OB_Model/yolov5mu.pt
+/BP_OB_Model/yolov5lu.pt
 .databricks
 
 # nodeJS 파일/폴더

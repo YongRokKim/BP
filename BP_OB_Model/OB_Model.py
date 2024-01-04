@@ -1,9 +1,9 @@
 from ultralytics import YOLO
 
-model = YOLO('yolov5mu.pt')
+model = YOLO('yolov5l.pt')
 model.to('cuda')
 
-model.train(data='../BP_OB_Model/Food_OD.yaml', epochs=100, patience=30, batch=64, imgsz=416)
+model.train(data='../BP_OB_Model/Food_OD.yaml', epochs=100, patience=30, batch=32, imgsz=416)
 
 # import re,os
 # # Databricks MLflow 추적 서버 URI 설정
