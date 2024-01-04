@@ -1,0 +1,22 @@
+{
+	"version": "V2",
+	"requestId": "09d439ae-b453-44c9-b034-7f5a51e87a86",
+	"timestamp": 1704347028917,
+	"images": [
+		{
+			"uid": "cf457daf3ff4414a9a7eef5e8663f0e1",
+			"name": "demo",
+			"inferResult": "ERROR",
+			"message": "Recognition failure.",
+			"validationResult": {
+				"result": "NO_REQUESTED"
+			},
+			"convertedImageInfo": {
+				"width": 1440,
+				"height": 1440,
+				"pageIndex": 0,
+				"longImage": false
+			}
+		}
+	]
+}

@@ -32,33 +32,56 @@ def img_resize(img):
         # 이미지를 열고 크기 가져오기
         with Image.open(io.BytesIO(img)) as img:
             width, height = img.size
+            print("@hello14 :", width, height)
 
-            # 최소 크기 정의
-            minWidth = 1080 if width > height else 720
-            minHeight = 720 if width > height else 1080
+            # 최소 및 최대 크기 정의
+            minWidth, maxWidth = (720, 2560) if width > height else (720, 1440)
+            minHeight, maxHeight = (1080, 1440) if width > height else (1080, 2560)
+            print("@hello14 :", minWidth, minHeight, maxWidth, maxHeight)
 
-            # 이미지가 이미 최소 크기 요건을 충족하는지 확인
-            if width >= minWidth and height >= minHeight:
-                print("Image already meets the minimum size requirements. No resizing needed.")
-                return
+            if minWidth <= width <= maxWidth and minHeight <= height <= maxHeight:
+                print("Image meets size requirements. No resizing needed.")
+                img_byte_arr = io.BytesIO()
+                img.save(img_byte_arr, format='JPEG')
+                return img_byte_arr.getvalue()
 
-            # 새 크기 계산 및 비율 유지
-            if width / height > 1:
-                # 넓은 이미지
-                newHeight = max(height, minHeight)
-                newWidth = round(newHeight * (width / height))
-                if newWidth < minWidth:
-                    newWidth = minWidth
-                    newHeight = round(newWidth / (width / height))
-            else:
-                # 높은 이미지
-                newWidth = max(width, minWidth)
-                newHeight = round(newWidth / (width / height))
-                if newHeight < minHeight:
-                    newHeight = minHeight
+            # 이미지 크기 조정
+            newWidth, newHeight = width, height
+            if width < minWidth or height < minHeight:
+                # 이미지 확대
+                if width / height > 1:
+                    # 넓은 이미지
+                    newHeight = max(height, minHeight)
                     newWidth = round(newHeight * (width / height))
+                    if newWidth < minWidth:
+                        newWidth = minWidth
+                        newHeight = round(newWidth / (width / height))
+                else:
+                    # 높은 이미지
+                    newWidth = max(width, minWidth)
+                    newHeight = round(newWidth / (width / height))
+                    if newHeight < minHeight:
+                        newHeight = minHeight
+                        newWidth = round(newHeight * (width / height))
+            elif width > maxWidth or height > maxHeight:
+                # 이미지 축소
+                if width / height > 1:
+                    # 넓은 이미지
+                    newWidth = min(width, maxWidth)
+                    newHeight = round(newWidth / (width / height))
+                    if newHeight > maxHeight:
+                        newHeight = maxHeight
+                        newWidth = round(newHeight * (width / height))
+                else:
+                    # 높은 이미지
+                    newHeight = min(height, maxHeight)
+                    newWidth = round(newHeight / (width / height))
+                    if newWidth > maxWidth:
+                        newWidth = maxWidth
+                        newHeight = round(newWidth / (width / height))
 
-            # 이미지 크기 조정 및 저장
+            # 조정된 크기 출력 및 이미지 크기 조정
+            print("@hello15 : Resized Image Size:", newWidth, newHeight)
             resized_img = img.resize((newWidth, newHeight))
             img_byte_arr = io.BytesIO()
             resized_img.save(img_byte_arr, format='JPEG')
@@ -104,9 +127,10 @@ def food_api(img,secret_file):
 
     if response.ok:
         json_data = json.loads(response.text)
-        code = json_data['code']
+        print("@hello13 :",json_data)
+        # code = json_data['code']
         data = json_data['data']
-        print(f"Code: {code}")
+        # print(f"Code: {code}")
         return data
         #.json 형식 출력
         # print(f"Data: {data}")
@@ -194,22 +218,24 @@ def predict():
                 "foodNames": [],
                 # kt predict food info
                 "ktFoodsInfo": {} 
-            }
+            },
+            # "image":[file]
         }
         
         # API키 연결 .json 파일
         # =====================================================
         secret_file = "secrets.json"
         # ====================================================
-        # print("@hello2")
+        print("@hello2")
         try:
-            # print("@helloimg",type(img))
+            print("@helloimg",type(img))
+            resized_img = img_resize(img)
             ocr_result = OCR_api(img, secret_file)
-            # print("@hello3")
+            print("@hello10 :",ocr_result)
+            print("@hello3")
             if ocr_result['images'][0]['inferResult'] == 'ERROR':
-                # print("@hello6",ocr_result['images'][0]['inferResult'] )
-                resized_img = img_resize(img)
-                # print('@hello7')
+                print("@hello6",ocr_result['images'][0]['inferResult'] )
+                print('@hello7')
                 food_result = food_api(resized_img, secret_file)
                 od_result = get_prediction(img)
                 print('+++'*20)
@@ -223,13 +249,17 @@ def predict():
                 # print(food_result)
                 # print("="*20)
                 for region_num in food_result[0]:
-                    if food_result[0][region_num]['prediction_top1']['confidence'] >=0.5:
+                    # res['predict']['ktFoodsInfo'][region_num] = food_result[0][region_num]['prediction_top1']
+                    # res['predict']['foodNames'].append(food_result[0][region_num]['prediction_top1']["food_name"])
+                    if food_result[0][region_num]['prediction_top1']['confidence'] >=0.3:
                         res['predict']['ktFoodsInfo'][region_num] = food_result[0][region_num]['prediction_top1']
                         res['predict']['foodNames'].append(food_result[0][region_num]['prediction_top1']["food_name"])
 
                 for item in od_result:
-                    if od_result[item]['Food_name'] not in res['predict']['foodNames'] and od_result[item]['highest_confidence'] >=0.3:
-                        res['predict']['foodNames'].append(od_result[item]['Food_name'])
+                    # res['predict']['foodNames'].append(od_result[item]['Food_name'])
+                    if od_result[item]['highest_confidence'] >=0.5:
+                        if od_result[item]['Food_name'] not in res['predict']['foodNames']:
+                            res['predict']['foodNames'].append(od_result[item]['Food_name'])
             else:
                 # print('@hello4')
                 if ocr_result['images'][0]['receipt']['result']['subResults']:
