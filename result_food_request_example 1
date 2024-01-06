@@ -1,0 +1,113 @@
+{
+    //0-OCR, 1-음식탐지
+    "inferResult": 1,
+    // 식사 시간 str
+    "mealType" : "프론트에서 추가(아침,점심,저녁,간식 중1)",
+    // 탐지한 결과
+    "predict": {
+        // 음식이름 리스트
+        "foodNames": [
+            "연근조림",
+            "단감",
+            "홍어무침",
+            "약식",
+            "파김치",
+            "코다리조림",
+            "김치찌개"
+        ],
+        // kt api 탐지 결과( 음식이름, 신뢰도, 각종 영양성분 )
+        "ktFoodsInfo": {
+            "region_0": {
+                "confidence": 0.54201055,
+                "food_name": "연근조림",
+                "food_code": "D018450",
+                "food_cal": 87.19,
+                "food_nat": 330.58,
+                "food_serving_size": 50,
+                "food_carbs": 14.71,
+                "food_protein": 1.34,
+                "food_fat": 2.55,
+                "food_sugar": 1.39,
+                "food_cholesterol": 0
+            },
+            "region_1": {
+                "confidence": 0.198968,
+                "food_name": "단감",
+                "food_code": "R001257",
+                "food_cal": 27,
+                "food_nat": 1671,
+                "food_serving_size": 100,
+                "food_carbs": 4.74,
+                "food_protein": 0.92,
+                "food_fat": 0.94,
+                "food_sugar": 2.14,
+                "food_cholesterol": 0
+            },
+            "region_2": {
+                "confidence": 0.46224222,
+                "food_name": "홍어무침",
+                "food_code": "D000205",
+                "food_cal": 198.94,
+                "food_nat": 802.04,
+                "food_serving_size": 200,
+                "food_carbs": 25.95,
+                "food_protein": 17.85,
+                "food_fat": 2.63,
+                "food_sugar": 14.46,
+                "food_cholesterol": 57.03
+            },
+            "region_3": {
+                "confidence": 0.80315477,
+                "food_name": "약식",
+                "food_code": "D018006",
+                "food_cal": 219.87,
+                "food_nat": 221.18,
+                "food_serving_size": 100,
+                "food_carbs": 45.24,
+                "food_protein": 4.21,
+                "food_fat": 2.45,
+                "food_sugar": 13.24,
+                "food_cholesterol": 0
+            },
+            "region_4": {
+                "confidence": 0.43798676,
+                "food_name": "파김치",
+                "food_code": "D018125",
+                "food_cal": 13.32,
+                "food_nat": 259.16,
+                "food_serving_size": 30,
+                "food_carbs": 1.26,
+                "food_protein": 0.77,
+                "food_fat": 0.58,
+                "food_sugar": 0.45,
+                "food_cholesterol": 0.05
+            },
+            "region_5": {
+                "confidence": 0.5198828,
+                "food_name": "코다리조림",
+                "food_code": "D018455",
+                "food_cal": 86.06,
+                "food_nat": 465.52,
+                "food_serving_size": 100,
+                "food_carbs": 4.16,
+                "food_protein": 16.46,
+                "food_fat": 0.4,
+                "food_sugar": 3.67,
+                "food_cholesterol": 66.8
+            },
+            "region_6": {
+                "confidence": 0.3523542,
+                "food_name": "김치찌개",
+                "food_code": "D000385",
+                "food_cal": 243.03,
+                "food_nat": 1962.14,
+                "food_serving_size": 400,
+                "food_carbs": 11.93,
+                "food_protein": 15.07,
+                "food_fat": 15,
+                "food_sugar": 3.02,
+                "food_cholesterol": 25.18
+            }
+        }
+    }
+}

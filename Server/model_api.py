@@ -13,20 +13,13 @@ from pytz import timezone
 # naver-api lib
 import uuid
 import time
-# json-image-decodeing
-import base64
+# ensemble lib
+from ensemble_boxes import *
+import torch
+from collections import defaultdict
 
 app = Flask(__name__)
 
-def get_secret(setting, secret_file):
-    try:
-        with open(secret_file) as f:
-            secrets = json.loads(f.read())
-        return secrets[setting]
-    except KeyError:
-        print("Set the {} environment variable".format(setting))
-
-# pillow 사용 이미지 사이즈 조절
 def img_resize(img):
     try:
         # 이미지를 열고 크기 가져오기
@@ -38,7 +31,6 @@ def img_resize(img):
             minWidth, maxWidth = (720, 2560) if width > height else (720, 1440)
             minHeight, maxHeight = (1080, 1440) if width > height else (1080, 2560)
             print("@hello14 :", minWidth, minHeight, maxWidth, maxHeight)
-
             if minWidth <= width <= maxWidth and minHeight <= height <= maxHeight:
                 print("Image meets size requirements. No resizing needed.")
                 img_byte_arr = io.BytesIO()
@@ -90,23 +82,36 @@ def img_resize(img):
         print("Error resizing image:", error)
         return None
 
-def food_api(img,secret_file):
+def get_secret(setting):
+    secret_file = "secrets.json"
+    try:
+        with open(secret_file) as f:
+            secrets = json.loads(f.read())
+        return secrets[setting]
+    except KeyError:
+        print("Set the {} environment variable".format(setting))
+
+def food_api(img):
+    point_list = []
+    food_api_result = {}
     # timestamp 생성
     timestamp = datetime.now(timezone("Asia/Seoul")).strftime("%Y%m%d%H%M%S%f")[:-3]
- 
-    client_id = get_secret("kt_client_id",secret_file)
-    client_secret = get_secret("kt_client_secret",secret_file)
+    # API키 분리
+
+    client_id = get_secret("kt_client_id")
+    client_secret = get_secret("kt_client_secret")
 
     # HMAC 기반 signature 생성
     signature = hmac.new(
         key=client_secret.encode("UTF-8"), msg= f"{client_id}:{timestamp}".encode("UTF-8"), digestmod=hashlib.sha256
     ).hexdigest()
 
-    # api서버 연결 및 api 사용 준비
+
     url = "https://aiapi.genielabs.ai/kt/vision/food"
-    client_key = get_secret("kt_client_key",secret_file)
+    client_key = get_secret("kt_client_key")
     signature = signature
     timestamp = timestamp
+
 
     headers = {
         "Accept": "*/*",
@@ -118,36 +123,36 @@ def food_api(img,secret_file):
     fields = {
         "flag": "ALL" # or "UNSELECTED" or "CALORIE" or "NATRIUM"
     }
-    
-    img_file = io.BytesIO(img)
-    print("@hello8",img_file)
-    obj =  {'metadata': json.dumps(fields), 'media': img_file}
+
+    print("--------------",type(img))
+    obj =  {'metadata': json.dumps(fields), 'media': img} # or "false"
 
     response = requests.post(url, headers=headers, files=obj)
 
     if response.ok:
         json_data = json.loads(response.text)
-        print("@hello13 :",json_data)
-        # code = json_data['code']
+        code = json_data['code']
         data = json_data['data']
-        # print(f"Code: {code}")
-        return data
+        print(f"Code: {code}")
         #.json 형식 출력
         # print(f"Data: {data}")
-        # for region_num in data[0]:
-        #     # BP.ipynb 파일 확인하여 .json 으로 전송하는 코드 필요
-        #     #----------------------------------------------------
-        #     return data[0][region_num]['prediction_top1'] # 수정 요망
-        #     #----------------------------------------------------
+        for region_num in data[0]:
+            print(data[0][region_num]['prediction_top1'])
+            food_api_result[region_num] = data[0][region_num]['prediction_top1']
+            for point in data[0][region_num]['position']:
+                if point['location_type'] == 'LEFT_TOP':
+                    left_top = (int(point['x'].split('.')[0]), int(point['y'].split('.')[0]))
+                else:
+                    right_bottom = (int(point['x'].split('.')[0]), int(point['y'].split('.')[0]))
+
+            point_list.append([left_top[0],left_top[1],right_bottom[0],right_bottom[1],data[0][region_num]['prediction_top1']['food_name'],data[0][region_num]['prediction_top1']['confidence']])
+        return [food_api_result,point_list]
     else:
-        # BP.ipynb 파일 확인하여 서버통신 코드 확인 하는 코드 필요
-        #------------------------------------------------------------
-        print(f"Error: {response.status_code} - {response.text}") # 수정 요망
-        #------------------------------------------------------------
+        print(f"Error: {response.status_code} - {response.text}")
         
-def OCR_api(img,secret_file):
-    api_url = get_secret('CLOVA_OCR_Invoke_URL',secret_file)
-    secret_key = get_secret('naver_secret_key',secret_file)
+def OCR_api(img):
+    api_url = get_secret('CLOVA_OCR_Invoke_URL')
+    secret_key = get_secret('naver_secret_key')
 
     request_json = {
         'images': [
@@ -175,41 +180,120 @@ def OCR_api(img,secret_file):
     result = response.json()
     return result
 
-def get_prediction(img):
-    img = Image.open(io.BytesIO(img))
-    result = model.predict(img)
-    boxes = result[0].boxes
-    pred_list = {}
-    if len(boxes.conf) > 0:
-        for index,box in enumerate(boxes):
-            # 신뢰도가 가장 높은 객체를 찾음
-            max_conf_index = box.conf.argmax()
-            highest_confidence = box.conf[max_conf_index].item()
-            class_id = box.cls[max_conf_index].item()
+def get_prediction_wbf(img, model_list):
+    boxes_list = []
+    scores_list = []
+    labels_list = []
 
-            # 클래스 ID를 사용하여 음식 이름 찾기
-            food_name = result[0].names[class_id]
-            pred_list[f'item{index}']={"Food_name" : food_name,
-                                     "highest_confidence":highest_confidence}
-            return pred_list       
-    else:
-        print("탐지된 객체가 없습니다.")
-    return pred_list
-    
-model = YOLO("../weights/yolov8m_train.pt")
+    resized_img = Image.open(io.BytesIO(img))
+    # 초기 라벨 매핑 (이 예시에서는 비어있음)
+    label_mapping = {}
+    # kt 에서 찾은 음식이 이미 라벨링 되어 있을 경우를 상정
+    key_mapping = {}
+
+    img_width, img_height = resized_img.size
+    food_api_result,point_list = food_api(img)  # Ensure food_api is correctly defined
+    # Collect boxes, scores, and labels from each model
+    for model in model_list:
+        result = model.predict(resized_img)
+        print("@hello-result",result)
+        boxes = result[0].boxes
+        print("@hello-2",boxes)
+        if len(boxes.conf) > 0:
+            print("@hello3")
+            model_boxes = []
+            model_scores = []
+            model_labels = []
+            print("@hello4",boxes)
+            for i, box in enumerate(boxes.xyxy):
+                print("@hello4")
+                x_min, y_min, x_max, y_max = box
+                conf = boxes.conf[i]
+                cls_name = result[0].names[int(boxes.cls[i])]
+                cls = int(boxes.cls[i])
+
+                # 새로운 라벨을 매핑에 추가
+                if cls_name not in label_mapping:
+                    label_mapping[cls] = cls_name
+                    key_mapping[cls_name] = cls
+
+                model_boxes.append([x_min, y_min, x_max, y_max])
+                model_scores.append(conf)
+                model_labels.append(cls)
+            
+            boxes_list.append(model_boxes)
+            scores_list.append(model_scores)
+            labels_list.append(model_labels)
+            print("@@@@ labels_list :",labels_list)
+
+    # Add labels from point_list to the mapping
+    additional_labels = 150  # Start number for labels added from food_api
+    api_model_boxes = []
+    api_model_scores = []
+    api_model_labels = []
+    for item in point_list:
+        x_min, y_min, x_max, y_max, food_name, confidence = item
+        if food_name not in key_mapping:
+            label_mapping[additional_labels] = food_name
+            api_model_labels.append(additional_labels)
+            additional_labels += 1
+        else:
+            api_model_labels.append(key_mapping[food_name])
+            additional_labels += 1
+        # Add the box to the last model's list
+        api_model_boxes.append([x_min, y_min, x_max, y_max])
+        api_model_scores.append(confidence)
+    boxes_list.append(api_model_boxes)
+    scores_list.append(api_model_scores)
+    labels_list.append(api_model_labels)
+    print("@@@@ labels_list :",labels_list)
+
+    # Normalize box coordinates and ensure consistency
+    for i in range(len(boxes_list)):
+        model_boxes = boxes_list[i]
+        model_scores = scores_list[i]
+        model_labels = labels_list[i]
+
+        if len(model_boxes) != len(model_scores) or len(model_boxes) != len(model_labels):
+            print(f"Error in model {i}: Length of boxes, scores, and labels do not match.")
+            print(f"Boxes: {len(model_boxes)}, Scores: {len(model_scores)}, Labels: {len(model_labels)}")
+            continue
+
+        # Normalize boxes and move to CPU if necessary
+        normalized_boxes = []
+        for box in model_boxes:
+            box = [b.cpu() if isinstance(b, torch.Tensor) else b for b in box]  # Move to CPU if tensor
+            x_min, y_min, x_max, y_max = box
+            normalized_boxes.append([x_min / img_width, y_min / img_height, x_max / img_width, y_max / img_height])
+        boxes_list[i] = normalized_boxes
+
+    # Apply Weighted Boxes Fusion
+    try:
+        pred_list = []
+        _, wbf_scores, wbf_labels = weighted_boxes_fusion(
+            boxes_list, scores_list, labels_list, iou_thr=0.55, skip_box_thr=0.20, conf_type='max'
+        )
+        for index, scores in enumerate(wbf_scores):
+            if scores >= 0.4:
+                pred_list.append(label_mapping[wbf_labels[index]])
+        return [food_api_result,pred_list]
+    except Exception as e:
+        print("Error during Weighted Boxes Fusion:", e)
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
+    # json 전송 format
     if request.method == 'POST':
         file = request.files['food_image']
-        print("files-type",file)
+        print("@files-type",file)
         img = file.read()
+
         res = {
             # 0 : OCR , 1 : KT & OD
             "inferResult": 0,
             # mealType 
             "mealType" : "",
-            # image beatmap
             #dayTime send
             "dayTime" : "",
             # predict Result
@@ -221,51 +305,34 @@ def predict():
             },
             # "image":[file]
         }
-        
-        # API키 연결 .json 파일
-        # =====================================================
-        secret_file = "secrets.json"
-        # ====================================================
-        print("@hello2")
-        try:
-            print("@helloimg",type(img))
-            resized_img = img_resize(img)
-            ocr_result = OCR_api(img, secret_file)
-            print("@hello10 :",ocr_result)
-            print("@hello3")
-            if ocr_result['images'][0]['inferResult'] == 'ERROR':
-                print("@hello6",ocr_result['images'][0]['inferResult'] )
-                print('@hello7')
-                food_result = food_api(resized_img, secret_file)
-                od_result = get_prediction(img)
-                print('+++'*20)
-                print(food_result)
-                print("+++"*20)
-                print(od_result)
-                print('+++'*20)
-                res['inferResult'] = 1
-                # print("@hello3")
-                # print("="*20)
-                # print(food_result)
-                # print("="*20)
-                for region_num in food_result[0]:
-                    # res['predict']['ktFoodsInfo'][region_num] = food_result[0][region_num]['prediction_top1']
-                    # res['predict']['foodNames'].append(food_result[0][region_num]['prediction_top1']["food_name"])
-                    if food_result[0][region_num]['prediction_top1']['confidence'] >=0.3:
-                        res['predict']['ktFoodsInfo'][region_num] = food_result[0][region_num]['prediction_top1']
-                        res['predict']['foodNames'].append(food_result[0][region_num]['prediction_top1']["food_name"])
+    # 학습 모델 리스트
+    model_list = []
+    model_weights=[
+        "../weights/yolov8m_train.pt",
+        "../weights/yolov5mu_train.pt"
+        # "../BP_OB_Model/runs/detect/train9/weights/best.pt",
+        # "../BP_OB_Model/runs/detect/train2/weights/best.pt",
+        # "../BP_OB_Model/runs/detect/train13/weights/best.pt"
+        ]
+    
+    for model_weight in model_weights:
+        model_yolov = YOLO(model_weight)
+        model_list.append(model_yolov)
 
-                for item in od_result:
-                    # res['predict']['foodNames'].append(od_result[item]['Food_name'])
-                    if od_result[item]['highest_confidence'] >=0.5:
-                        if od_result[item]['Food_name'] not in res['predict']['foodNames']:
-                            res['predict']['foodNames'].append(od_result[item]['Food_name'])
+        try:
+            ocr_api_result = OCR_api(img)
+            print("@hello-1",ocr_api_result)
+            if (ocr_api_result['images'][0]['inferResult'] == 'ERROR') or (len(ocr_api_result['images'][0]['receipt']['result']['subResults']) == 0):
+                resized_img = img_resize(img)
+                food_api_result,od_result = get_prediction_wbf(resized_img,model_list=model_list)
+                res['inferResult'] = 1
+                res['predict']['ktFoodsInfo'] = food_api_result
+                res['predict']['foodNames'] = od_result
+
             else:
-                # print('@hello4')
-                if ocr_result['images'][0]['receipt']['result']['subResults']:
-                    for field in ocr_result['images'][0]['receipt']['result']['subResults'][0]['items']:
-                        if field['name']['text'] not in res['predict']['foodNames']:
-                            res['predict']['foodNames'].append(field['name']['text'])
+                for field in ocr_api_result['images'][0]['receipt']['result']['subResults'][0]['items']:
+                    if field['name']['text'] not in res['predict']['foodNames']:
+                        res['predict']['foodNames'].append(field['name']['text'])
 
             with open(f"../result.json", 'w', encoding='utf-8') as f:
                 json.dump(res, f, ensure_ascii=False, indent=4)
@@ -278,9 +345,9 @@ def predict():
         # jsonify를 사용하면 json.dump()와 똑같이 ascii 인코딩을 사용하기 때문에 한글 깨짐
         # return jsonify({'class_id': class_id, 'class_name': class_name})
         
-        print(res)
         res = make_response(json.dumps(res, ensure_ascii=False))
         res.headers['Content-Type'] = 'application/json'
+        
         return res
     
 if __name__=="__main__":

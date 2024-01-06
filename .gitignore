@@ -32,3 +32,4 @@
 
 # flask 파일
 /Server/__pycache__
+/flask_test.py
