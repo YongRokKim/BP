@@ -274,7 +274,7 @@ def get_prediction_wbf(img, model_list):
             boxes_list, scores_list, labels_list, iou_thr=0.55, skip_box_thr=0.20, conf_type='max'
         )
         for index, scores in enumerate(wbf_scores):
-            if scores >= 0.4:
+            if (scores >= 0.4) and (label_mapping[wbf_labels[index]] not in pred_list):
                 pred_list.append(label_mapping[wbf_labels[index]])
         return [food_api_result,pred_list]
     except Exception as e:
